@@ -15,7 +15,7 @@ This script is written in [Elvish](https://elv.sh/), a shell and scripting langu
 
 It will likely only work on unix-derived systems: Linux and MacOS
 
-Put `hexdocs.elv` somewhere on your path.  I symlink it to `/usr/local/bin/hexdocs`.
+Put [hexdocs.elv](https://github.com/BTBurke/hexdocs-zeal/blob/main/hexdocs.elv) somewhere on your path.  I symlink it to `/usr/local/bin/hexdocs`.
 
 # Managing Package Documentation
 
