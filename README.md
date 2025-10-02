@@ -1,6 +1,6 @@
 # Hexdocs Zeal
 
-This is a script to download Gleam package documentation to the offline document viewer [Zeal](https://zealdocs.org/).  Zeal is an open source version of the Mac app Dash, but unlike Dash it doesn't have the ability to directly download docs from hexdocs.
+This is a script to download Gleam package documentation to the [Zeal](https://zealdocs.org/) offline documentation browser.  Zeal is an open source version of the Mac app [Dash](https://kapeli.com/dash), but unlike Dash it doesn't have the ability to directly download docs from [hexdocs](https://hexdocs.pm/).
 
 When learning gleam, I got tired of switching back and forth between multiple hexdocs tabs.  I wanted docs in Zeal where I can search and work offline.
 
@@ -10,8 +10,8 @@ When learning gleam, I got tired of switching back and forth between multiple he
 
 This script is written in [Elvish](https://elv.sh/), a shell and scripting language based on functional programming and typed values. To run it, you will need:
 
-* jq: to create the Zeal search index for modules, types, constructors, and functions
-* elvish: to run the script
+* *jq*: to create the Zeal search index for modules, types, constructors, and functions
+* *elvish*: to run the script
 
 It will likely only work on unix-derived systems: Linux and MacOS
 
