@@ -10,8 +10,8 @@ When learning gleam, I got tired of switching back and forth between multiple he
 
 This script is written in [Elvish](https://elv.sh/), a shell and scripting language based on functional programming and typed values. To run it, you will need:
 
-* *jq*: to create the Zeal search index for modules, types, constructors, and functions
-* *elvish*: to run the script
+* **jq**: to create the Zeal search index for modules, types, constructors, and functions
+* **elvish**: to run the script
 
 It will likely only work on unix-derived systems: Linux and MacOS
 
