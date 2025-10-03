@@ -6,7 +6,7 @@ When learning gleam, I got tired of switching back and forth between multiple he
 
 ![screenshot of zeal with hexdocs package docs](screenshot.png)
 
-# Installation
+## Installation
 
 This script is written in [Elvish](https://elv.sh/), a shell and scripting language based on functional programming and typed values. To run it, you will need:
 
@@ -20,7 +20,7 @@ It will only work on unix-like systems due to the use of typical shell commands 
 
 Put [hexdocs.elv](https://github.com/BTBurke/hexdocs-zeal/blob/main/hexdocs.elv) somewhere on your path.  I symlink it to `/usr/local/bin/hexdocs`.
 
-# Managing Package Documentation
+## Managing Package Documentation
 
 ```
 # add package docs
@@ -36,16 +36,16 @@ hexdocs remove <package>
 hexdocs remove all
 ```
 
-# FAQ
+## FAQ
 
-## Why use Elvish?
+### Why use Elvish?
 
 I wanted to experiment with Elvish scripting and its use of typed values.  This was a small project to learn the language and use it in anger.
 
-## Will it work on Windows?
+### Will it work on Windows?
 
 It should work in WSL.
 
-## Why not use Zeal feeds?
+### Why not use Zeal feeds?
 
 Zeal has the ability to read docset data from an XML feed and update docsets automatically when new versions are released.  That would be a better way to do it, but I can't be bothered to set up a server just to host a few docsets I can download manually in the terminal.
