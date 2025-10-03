@@ -10,10 +10,13 @@ When learning gleam, I got tired of switching back and forth between multiple he
 
 This script is written in [Elvish](https://elv.sh/), a shell and scripting language based on functional programming and typed values. To run it, you will need:
 
-* **jq**: to create the Zeal search index for modules, types, constructors, and functions
+* **jq**: to extract modules, types, constructors, and functions for the search index
 * **elvish**: to run the script
+* **tar**: to extract the docs
+* **sqlite3**: to construct the Zeal search index
+* **curl**: to download the docs
 
-It will likely only work on unix-derived systems: Linux and MacOS
+It will only work on unix-like systems due to the use of typical shell commands for copying and moving files.
 
 Put [hexdocs.elv](https://github.com/BTBurke/hexdocs-zeal/blob/main/hexdocs.elv) somewhere on your path.  I symlink it to `/usr/local/bin/hexdocs`.
 
@@ -41,7 +44,7 @@ I wanted to experiment with Elvish scripting and its use of typed values.  This 
 
 ## Will it work on Windows?
 
-Probably not, but if you get it to work send a pull request.
+It should work in WSL.
 
 ## Why not use Zeal feeds?
 

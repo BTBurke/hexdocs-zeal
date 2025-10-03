@@ -1,8 +1,29 @@
-#! /usr/bin/env elvish
+#!/usr/bin/env elvish
+
+# This script downloads Gleam package documentation from Hexdocs for the Zeal offline
+# documentation browser and installs it to your Zeal docset directory. Run it with no
+# arguments to get the usage help.
+# Source: https://github.com/BTBurke/hexdocs-zeal
+# License: MIT
 
 use os
 use path
 use file
+
+# get install directory
+fn install_directory {
+    var base_dir = ~/.local/share
+    var zeal_dir = Zeal/Zeal/docsets
+    if (has-env XDG_DATA_HOME) {
+        set base_dir = (get-env XDG_DATA_HOME)
+    }
+    if (os:is-dir $base_dir/$zeal_dir) {
+        put $base_dir/$zeal_dir
+    } else {
+        put $nil
+    }
+
+}
 
 # get release information
 fn get_latest_release {|ctx|
@@ -20,9 +41,15 @@ fn get_latest_release {|ctx|
 fn download_docs {|ctx|
     var dir = (os:temp-dir "hexdocs")
     var file = $dir/$ctx[pkg]'-'$ctx[release][version].tar.gz
-    curl --max-time 30 --retry 2 -Ls -o $file $ctx[release][url]/docs
-    var ctx = (assoc $ctx base $dir)
-    put (assoc $ctx tgz_file $file)
+    try {
+        curl --max-time 30 --retry 2 -Ls -o $file $ctx[release][url]/docs
+        set ctx = (assoc $ctx base $dir)
+        set ctx = (assoc $ctx tgz_file $file)
+    } catch e {
+        nop
+    } finally {
+        put $ctx
+    }
 }
 
 # extracts the downloaded docs
@@ -101,22 +128,37 @@ fn make_plist {|ctx|
 
 # fixes issues with file permissions that can happen after docs are extracted from tar file
 fn fix_permissions {|ctx|
-    var uid = (whoami)
+    var chown-me~ = {|filepath|
+        # will only work on unix-like systems
+        # on windows will do nothing
+        if (and (has-external whoami) (has-external chown)) {
+            var uid = (whoami)
+            chown $uid':'$uid $filepath
+        }
+    }
+
     for d [$ctx[base]/**[type:dir]] {
-        chown $uid':'$uid $d
+        chown-me $d
         os:chmod 0o766 $d
         for f [$d/**/*[nomatch-ok][type:regular]] {
-            chown $uid':'$uid $f
+            chown-me $f
             os:chmod 0o666 $f
         }
     }
 }
 
+
 # moves the Zeal directory layout from the temp directory to zeal data directory
 fn install_docset {|ctx|
-    var install_path = ~/.local/share/Zeal/Zeal/docsets
-    rm -rf $install_path/$ctx[pkg].docset
+    var install_path = (install_directory)
+    os:remove-all $install_path/$ctx[pkg].docset
     mv $ctx[base]/$ctx[pkg].docset $install_path
+}
+
+fn read_json {|filepath|
+    var f = (file:open $filepath)
+    defer { file:close $f }
+    put (from-json < $f)
 }
 
 fn do_install {|ctx|
@@ -143,24 +185,24 @@ fn do_install {|ctx|
 }
 
 fn do_update {
-    var install_path = ~/.local/share/Zeal/Zeal/docsets
+    var install_path = (install_directory)
     for d [$install_path/*[type:dir]] {
         if (os:exists $d/hexdocs.json) {
-            cat $d/hexdocs.json | var info = (from-json)
+            var info = (read_json $d/hexdocs.json)
             do_install $info
         }
     }
 }
 
 fn do_remove {|ctx|
-    var install_path = ~/.local/share/Zeal/Zeal/docsets
+    var install_path = (install_directory)
     var removed = []
     for d [$install_path/*[type:dir][nomatch-ok]] {
         if (os:exists $d/hexdocs.json) {
-            cat $d/hexdocs.json | var info = (from-json)
+            var info = (read_json $d/hexdocs.json)
             if (or $ctx[all] (==s $ctx[pkg] $info[pkg])) {
                 set removed = (conj $removed $info[pkg])
-                rm -rf $d
+                os:remove-all $d
             }
        }
     }
@@ -176,6 +218,19 @@ Commands:
     remove <package>    Remove package docs
     remove all          Remove all hexdocs
 "
+
+# check external requirements and config
+for cmd [jq curl sqlite3 tar] {
+    if (not (has-external $cmd)) {
+        echo "You must have" $cmd "installed to use this script"
+        exit 1
+    }
+    var dir = (install_directory)
+    if (not $dir) {
+        "Could not determine install directory"
+        exit 1
+    }
+}
 
 # add a package
 if (==s $args[0] "add") {
